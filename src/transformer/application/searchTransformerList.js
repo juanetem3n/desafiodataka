@@ -4,10 +4,8 @@ const lambdaHandler = require("../../shared/lambdaHandler"),
     changeCase = require("../../shared/changeCase");
 const { errorHandler } = require("../../shared/error/errorHandler"),
     { validateBodyKeys } = require("../../shared/validation");
-const {
-    getTransformerFactionFromFactionName,
-    getTransformerFactionFromFactionUuid,
-} = require("../controllers/transformerFactionController");
+const { getTransformerFactionFromFactionName } = require("../controllers/transformerFactionController");
+const { getTransformerList } = require("../controllers/transformerController");
 
 module.exports.query = lambdaHandler(async (event, context, callback) => {
     /**
@@ -55,8 +53,24 @@ module.exports.query = lambdaHandler(async (event, context, callback) => {
 
         validateBodyKeys(requiredKeys);
 
-        //insert code here
+        let transformerList = await getTransformerList();
 
+        let transformerFilterList = transformerList.filter((item) => {
+            return item.name?.includes(name) || item.factionName?.includes(factionName);
+        });
+
+        transformerFilterList = transformerFilterList.map((transformer) => {
+            return transformer.get();
+        });
+
+        let response = {
+            data: transformerFilterList,
+            data_per_page: 6,
+            page: 1,
+            total_data: transformerFilterList.length,
+            total_data_sent: transformerFilterList.length,
+            total_pages: transformerFilterList.length < 6 ? 1 : Math.floor(transformerFilterList.length / 6) + 1,
+        };
 
         callback(null, new Response(200, response, additionalHeaders).value);
     } catch (error) {

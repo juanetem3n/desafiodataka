@@ -1,0 +1,76 @@
+service: ${file(deploy/cfg.yml):transformerService}
+custom:
+    stage: ${file(deploy/cfg.yml):stage}
+    region: ${file(deploy/cfg.yml):region}
+    parentContext: ""
+    boundedContext: transformer
+    basePath: transformer
+    name: Transformer
+    vpcServiceDevSecurityGroupIds:
+        master: ${file(deploy/cfg.yml):vpcServiceDevSecurityGroupIds}
+    vpcServiceProdSubnetIds:
+        master: ${file(deploy/cfg.yml):vpcServiceDevSubnetIds}
+provider:
+    name: aws
+    runtime: nodejs18.x
+    region: eu-west-1
+    stage: ${self:custom.stage}
+    versionFunctions: false
+    memorySize: 512
+    timeout: ${file(deploy/cfg.yml):lambdaTimeOutDefault}
+    apiName: ${file(deploy/cfg.yml):apiName}
+    stackName: ${self:service}
+    stackTags:
+        Name: ${self:service}
+        service_name: ${self:service}
+        environment: ${self:custom.stage}
+        business_unit: RD:Development
+        managed_by: sls
+    deploymentBucket:
+        name: ${file(deploy/cfg.yml):bucketName}
+functions:
+    create:
+        name: ${self:service}-create
+        handler: src/${self:custom.parentContext}${self:custom.boundedContext}/application/create${self:custom.name}.command
+        events:
+            - http:
+                  path: ${self:custom.basePath}
+                  method: post
+                  cors:
+                      origin: "*"
+    get:
+        name: ${self:service}-get
+        handler: src/${self:custom.parentContext}${self:custom.boundedContext}/application/get${self:custom.name}.query
+        events:
+            - http:
+                  path: ${self:custom.basePath}/{uuid}
+                  method: get
+                  cors:
+                      origin: "*"
+    update:
+        name: ${self:service}-update
+        handler: src/${self:custom.parentContext}${self:custom.boundedContext}/application/update${self:custom.name}.command
+        events:
+            - http:
+                  path: ${self:custom.basePath}/{uuid}
+                  method: put
+                  cors:
+                      origin: "*"
+    delete:
+        name: ${self:service}-delete
+        handler: src/${self:custom.parentContext}${self:custom.boundedContext}/application/delete${self:custom.name}.command
+        events:
+            - http:
+                  path: ${self:custom.basePath}/{uuid}
+                  method: delete
+                  cors:
+                      origin: "*"
+plugins:
+    - serverless-plugin-include-dependencies
+    - serverless-deployment-bucket
+package:
+    patterns:
+        - "!./**"
+        - src/shared/**
+        - src/${self:custom.parentContext}${self:custom.boundedContext}/**
+        - deploy/cfg.yml

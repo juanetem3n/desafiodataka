@@ -1,0 +1,23 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# ide directories
+.idea
+.history
+.cache
+
+#code directory
+app
+
+# Visual Studio Code
+dev-neverland.pem
+package-lock.json
+.eslintrc.json
+
+#temp files
+src/tmp
+__pycache__/

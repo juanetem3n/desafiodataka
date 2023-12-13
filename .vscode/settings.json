@@ -1,0 +1,10 @@
+{
+    "mochaExplorer.files": ["src/#test/dev/transformer/*.js"],
+    "mochaExplorer.timeout": 40000,
+    "editor.formatOnSave": true,
+    "explorer.autoReveal": "focusNoScroll",
+    "mochaExplorer.nodePath": null,
+
+    // ... other settings
+    "yaml.customTags": ["!Sub", "!GetAtt"]
+}

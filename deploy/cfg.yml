@@ -1,0 +1,15 @@
+stage: "master" #dev - prod
+region: "eu-west-1"
+runtimeNode: "nodejs18.x"
+endPointVersion: "dev"
+errorHandler: true
+certificateName: "*.lookingdestiny.com"
+domain: "lookingdestiny.com"
+vpcServiceDevSecurityGroupIds: sg-0a95744f9a9b957a7
+vpcServiceDevSubnetIds: subnet-05685015be16571aa
+lambdaTimeOutDefault: 28
+helloWorldService: ${self:custom.stage}-helloWorld
+bucketName: ${self:custom.stage}-tech-assessment
+apiName: ${self:custom.stage}-tech-assessment
+
+transformerService: ${self:custom.stage}-transformer
